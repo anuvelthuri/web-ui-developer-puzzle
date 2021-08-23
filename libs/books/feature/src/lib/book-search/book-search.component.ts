@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
@@ -5,7 +6,7 @@ import {
   clearSearch,
   getAllBooks,
   ReadingListBook,
-  searchBooks
+  searchBooks,
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
@@ -13,13 +14,13 @@ import { Book } from '@tmo/shared/models';
 @Component({
   selector: 'tmo-book-search',
   templateUrl: './book-search.component.html',
-  styleUrls: ['./book-search.component.scss']
+  styleUrls: ['./book-search.component.scss'],
 })
-export class BookSearchComponent implements OnInit {
-  books: ReadingListBook[];
+export class BookSearchComponent {
+  books$: Observable<ReadingListBook[]> = this.store.select(getAllBooks);
 
   searchForm = this.fb.group({
-    term: ''
+    term: '',
   });
 
   constructor(
@@ -29,18 +30,6 @@ export class BookSearchComponent implements OnInit {
 
   get searchTerm(): string {
     return this.searchForm.value.term;
-  }
-
-  ngOnInit(): void {
-    this.store.select(getAllBooks).subscribe(books => {
-      this.books = books;
-    });
-  }
-
-  formatDate(date: void | string) {
-    return date
-      ? new Intl.DateTimeFormat('en-US').format(new Date(date))
-      : undefined;
   }
 
   addBookToReadingList(book: Book) {
